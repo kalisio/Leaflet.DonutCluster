@@ -11,7 +11,7 @@
 
     <link href='https://unpkg.com/leaflet@1.3.4/dist/leaflet.css' rel='stylesheet' />
     <link href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" rel='stylesheet' />
-    <!-- <link href="../src/Leaflet.DonutCluster.css" rel='stylesheet' /> -->
+    <link href="../src/Leaflet.DonutCluster.css" rel='stylesheet' />
     <style>
         body {
             margin: 0;
@@ -50,13 +50,22 @@
         var markers = L.DonutCluster({
             chunkedLoading: true
         }, {
-            key: 'title'
-            , arcColorDict: {
-                            A: 'red',
-                            B: 'blue',
-                            C: 'yellow',
-                            D: 'black'
-                        }
+            key: 'title',
+            arcColorDict: {
+                A: 'red',
+                B: 'blue',
+                C: 'yellow',
+                D: 'black'
+            },
+            style: {
+                fill: '#ffffff',
+                opacity: 1,
+                size: 50,
+                weight: 5
+            },
+            getLegend: function (title, color, percentage) {
+                return '<span style="color: ' + color + ';">' + title + ':&nbsp;' + percentage + '%</span>'
+            }
         })
 
 

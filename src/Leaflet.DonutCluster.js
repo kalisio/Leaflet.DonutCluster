@@ -46,6 +46,7 @@
             weight = options.weight || 20,
             colors = options.colors || ['#555'],
             fillColor = options.fillColor || '#f1d357',
+            opacity = options.opacity || 0.7,
             el = options.el,
             r = size / 2,
             PI = M.PI,
@@ -57,6 +58,9 @@
             arc,
             text,
             legend,
+            getLegend = options.getLegend || function (title, color, percentage) {
+                return '<span style="border: 1px solid ' + color + '; background-color:rgba(255, 255, 255, 0.7) ;border-left-width:15px; padding:1px;">' + title + ':&nbsp;' + percentage + '%</span>'
+            },
             setAttribute = function (el, o) {
                 for (var j in o) {
                     el.setAttribute(j, o[j]);
@@ -79,7 +83,7 @@
 
         text = div.appendChild(document.createElement('span'));
 
-        text.className = 'donut-text';
+        text.className = options.textClassName || 'donut-text';
 
         //if css is included, please comment the next line for performance.
         //text.setAttribute('style', 'color: black;display: block;position: absolute;top: 50%;left: 0;z-index: 2;line-height: 0;width: 100%;text-align: center;')
@@ -101,7 +105,7 @@
         circle.setAttribute('cy', size0 / 2.0);
         circle.setAttribute('r', arcRadius - weight / 2);
         circle.setAttribute('fill', fillColor);
-        circle.setAttribute('fill-opacity', 0.6);
+        circle.setAttribute('fill-opacity', opacity);
         svg.appendChild(circle);
         // svg.innerHTML = '<circle cx="' + size0 / 2.0 + '" cy="' + size0 / 2.0 + '" r="' + (arcRadius - weight / 2) + '" fill="' + fillColor + '" fill-opacity="0.6"></circle>'
         
@@ -131,7 +135,7 @@
                     'A', arcRadius, arcRadius, 0, largeArc, 1, endX, endY
                 ].join(' '),
                 stroke: c,
-                'stroke-opacity': "0.7",
+                'stroke-opacity': opacity,
                 'stroke-width': weight,
                 fill: 'none',
                 'data-name': name,
@@ -165,7 +169,7 @@
                     text.innerHTML = val;
                     t.saved = {
                         val: d.value,
-                        legend: '<span style="border: 1px solid ' + c + '; background-color:rgba(255, 255, 255, 0.7) ;border-left-width:15px; padding:1px;">' + (d.title || d.name) + ':&nbsp;' + perc + '%</span>'
+                        legend: getLegend(d.title || d.name, c, perc)
                     }
                     legend.innerHTML = t.saved.legend;
                 })
@@ -274,16 +278,15 @@
             });            
         }
 
-        var size = cfg.size || 50,
-            weight = cfg.weight || 10,
-            colors = cfg.colors;
-            
         var myDonut = donut({
-            size: size,
-            weight: weight,
+            size: cfg.size || 50,
+            weight: cfg.weight || 10,
+            opacity: cfg.opacity || 0.7,
+            textClassName: cfg.textClassName || 'donut-text',
+            getLegend: cfg.getLegend,
             data: list,
             onclick: cfg.onclick,
-            colors: colors,
+            colors: cfg.colors,
             fillColor: cfg.fillColor
         });
         myDonut.config = cfg;
@@ -356,6 +359,9 @@
                 return {
                     size: style.size,
                     weight: style.weight,
+                    opacity: style.opacity,
+                    getLegend: donutOpt.getLegend,
+                    textClassName: donutOpt.textClassName,
                     colors: donutOpt.arcColorDict,
                     fillColor: style.fill
                 }
@@ -364,7 +370,7 @@
             return new L.DivIcon({
                 el: myDonut,
                 iconSize: new L.Point(myDonut.config.size + 10, myDonut.config.size + 10),
-                className: 'donut-cluster'
+                className: donutOpt.className || 'donut-cluster'
             });
 
         }

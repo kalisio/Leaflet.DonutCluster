@@ -1,8 +1,9 @@
 Leaflet.DonutCluster
 =====================
 
-A lightweight standalone [Leaflet](https://leafletjs.com)  plugin to display donut charts instead of circles in map when using [Leaflet marker cluster](https://github.com/Leaflet/Leaflet.markercluster). This lib copies the codes which generate the donut svg from [donutjs](https://github.com/finom/donutjs).
+> forked from [akq/Leaflet.DonutCluster](https://github.com/akq/Leaflet.DonutCluster)
 
+A lightweight standalone [Leaflet](https://leafletjs.com) plugin to display donut charts instead of circles in map when using [Leaflet marker cluster](https://github.com/Leaflet/Leaflet.markercluster). This lib copies the codes which generate the donut svg from [donutjs](https://github.com/finom/donutjs).
 
 **Only depends on Leaflet and Leaflet.markercluster, NOT on other chart library like d3.js**
 
@@ -11,15 +12,16 @@ A lightweight standalone [Leaflet](https://leafletjs.com)  plugin to display don
 
 ![cluster map example](screenshot.png)
 
-
-
 ## Usage
-First include the Leaflet.DonutCluster.js, if you want to improve your performance, you could include the optional Leaflet.DonutCluster.css file,  
-But you should comment the line 85 in the Leaflet.DonutCluster.js file as well. 
+
+First install using `npm install Leaflet.DonutCluster` or `yarn add Leaflet.DonutCluster` and import in your project:
 ```javascript
-text.setAttribute('style', ...)
+import 'Leaflet.DonutCluster/src/Leaflet.DonutCluster.css'
+import 'Leaflet.DonutCluster/src/Leaflet.DonutCluster.js'
 ```
-Then use L.DonutCluster to create a markercluster instance.
+You can also directly include `Leaflet.DonutCluster.js` and `Leaflet.DonutCluster.css` in your HTML pages.
+
+Then use `L.DonutCluster` to create a marker cluster instance with options:
 ```javascript
 //create the markercluster
 var markers = L.DonutCluster(
@@ -41,7 +43,7 @@ var markers = L.DonutCluster(
     }
 })
 ```
-Then add the marker into the markercluster.
+Then add the marker into the marker cluster:
 ```javascript
 var marker = L.marker(L.latLng(a[0], a[1]), {
     title: title //the value to group
