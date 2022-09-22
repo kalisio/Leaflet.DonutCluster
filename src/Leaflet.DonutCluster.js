@@ -82,7 +82,7 @@
         text.className = 'donut-text';
 
         //if css is included, please comment the next line for performance.
-        text.setAttribute('style', 'color: black;display: block;position: absolute;top: 50%;left: 0;z-index: 2;line-height: 0;width: 100%;text-align: center;')
+        //text.setAttribute('style', 'color: black;display: block;position: absolute;top: 50%;left: 0;z-index: 2;line-height: 0;width: 100%;text-align: center;')
 
         text.innerHTML = readable(sum);
         legend = document.createElement('div');
@@ -355,7 +355,7 @@
                 }
                 return {
                     size: style.size,
-                    weigth: style.weight,
+                    weight: style.weight,
                     colors: donutOpt.arcColorDict,
                     fillColor: style.fill
                 }
