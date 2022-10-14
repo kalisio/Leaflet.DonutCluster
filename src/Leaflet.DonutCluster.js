@@ -44,7 +44,7 @@
                 value: 1
             }],
             weight = options.weight || 20,
-            colors = options.colors || ['#555'],
+            colors = options.colors,
             fillColor = options.fillColor || '#f1d357',
             opacity = options.opacity || 0.7,
             el = options.el,
@@ -124,9 +124,15 @@
                 endX = r1 + cos(endAngle) * arcRadius,
                 endY = r1 + sin(endAngle) * arcRadius;
 
-            var name = data[i].name,
-                c = Array.isArray(colors) ? colors[i % colors.length] : (colors[name] || '#fff');
-
+            var name = data[i].name
+            var c = '#555'
+            if (!colors) {
+                // Check if the value contains directly the color if we no dict available
+                if ((typeof name === 'string') && name.startsWith('#')) c = name
+            } else {
+                if (Array.isArray(colors)) c = colors[i % colors.length]
+                else c = colors[name] || '#fff'
+            }
             startAngle = endAngle;
 
             setAttribute(arc, {
