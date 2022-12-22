@@ -49,6 +49,7 @@
             fillColor = options.fillColor || '#f1d357',
             opacity = options.opacity || 0.7,
             el = options.el,
+            format = options.format || readable,
             r = size / 2,
             PI = M.PI,
             sin = M.sin,
@@ -64,9 +65,9 @@
                 var className = options.legendClassName || 'donut-legend'
                 var legend = `${title}:&nbsp;`
                 if (options.legendContent === 'percentage') {
-                    legend += readable(percentage) + '%';
+                    legend += format(percentage, 'percentage') + '%';
                 } else {
-                    legend += readable(value);
+                    legend += format(value, 'value');
                 }
                 return `<span class="${className}" style="border: 2px solid ${color};">${legend}</span>`
             },
@@ -100,11 +101,11 @@
         //text.setAttribute('style', 'color: black;display: block;position: absolute;top: 50%;left: 0;z-index: 2;line-height: 0;width: 100%;text-align: center;')
 
         if (options.textContent === 'count') {
-            text.innerHTML = readable(data.length);
+            text.innerHTML = format(data.length, 'count');
         } else if (options.textContent === 'total') {
-            text.innerHTML = readable(total);
+            text.innerHTML = format(total, 'value');
         } else {
-            text.innerHTML = readable(sum);
+            text.innerHTML = format(sum, 'value');
         }
         legend = document.createElement('div');
 
@@ -171,7 +172,7 @@
                 if (options.onclick) {
                     arc.addEventListener('click', function (e) {
                         var t = e.target,
-                            val = readable(d.value);
+                            val = format(d.value, 'value');
                         if (t.parentNode.stick != t) {
                             t.parentNode.stick = t;
                         } else t.parentNode.stick = false;
@@ -189,9 +190,9 @@
                     // If we have the value in the legend it does not make sense to also have it in text,
                     // so that we switch automatically to percentage display in text
                     if (options.legendContent !== 'percentage') {
-                        text.innerHTML = readable(percentage) + '%';
+                        text.innerHTML = format(percentage, 'percentage') + '%';
                     } else {
-                        text.innerHTML = readable(d.value);
+                        text.innerHTML = format(d.value, 'value');
                     }
                     t.saved = {
                         val: d.value,
@@ -220,7 +221,7 @@
                         saved = stick.saved;
                     }
                     div.parentNode.style.zIndex = div.zIndex;
-                    text.innerHTML = readable(saved.val);
+                    text.innerHTML = format(saved.val, (options.textContent === 'count' ? 'count' : 'value'));
                     legend.innerHTML = saved.legend;
                 })
             })(data[i], c, value * 100)
@@ -329,6 +330,7 @@
             textClassName: cfg.textClassName || 'donut-text',
             legendContent: cfg.legendContent || 'percentage',
             legendClassName: cfg.legendClassName || 'donut-legend',
+            format: cfg.format || readable,
             getLegend: cfg.getLegend,
             data: list,
             onclick: cfg.onclick,
@@ -408,6 +410,7 @@
                     opacity: style.opacity,
                     legendContent: donutOpt.legendContent,
                     legendClassName: donutOpt.legendClassName,
+                    format: donutOpt.format,
                     getLegend: donutOpt.getLegend,
                     textContent: donutOpt.textContent,
                     textClassName: donutOpt.textClassName,

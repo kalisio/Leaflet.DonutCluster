@@ -9,6 +9,7 @@ A lightweight standalone [Leaflet](https://leafletjs.com) plugin to display donu
 
 - [Online Demo -- basic](https://jsfiddle.net/b43c1xkf/1/embedded/result,html/)
 - [Online Demo -- sum by field](https://jsfiddle.net/mfxd015b/3/embedded/result,html/)
+- [Online Demo -- total by field](https://jsfiddle.net/kdL4gu6f/embedded/result,html/)
 
 ![cluster map example](screenshot.png)
 
@@ -70,6 +71,10 @@ var markers = L.DonutCluster(
         // The value to be displayed in the donut legend text on mouse hover
         // Could be `percentage` or `value` (defaults).
         legendContent: 'value',
+        // Function used to format value numbers for display
+        // Possible types are `count`, `percentage` or `value` and can help to use different formattings
+        format: (value, type) => value.toFixed(0),
+        getLegend: (title, color, percentage, value) => `<span>${title}:&nbsp;${percentage}%</span>`
     }
 )
 ```

@@ -40,7 +40,7 @@
                 var lat = Math.random() * (y[1] - y[0]) + y[0],
                     long = Math.random() * (x[1] - x[0]) + x[0],
                     type = types[Math.floor(Math.random() * types.length)];
-                result.push([lat, long, type])
+                result.push([lat, long, type, (Math.floor(Math.random() * 100000))])
             }
             return result;
         }
@@ -50,20 +50,17 @@
         var markers = L.DonutCluster({
             chunkedLoading: true
         }, {
-            key: 'title',
-            arcColorDict: {
-                A: 'red',
-                B: 'blue',
-                C: 'yellow',
-                D: 'black'
-            },
-            style: {
-                fill: '#ffffff',
-                opacity: 1,
-                size: 50,
-                weight: 5
-            },
-            format: (value, type) => (type === 'percentage' ? value.toFixed(1) : value.toFixed(0))
+            key: 'title'
+            , sumField: 'value'
+            , totalField: 'max'
+            , order:['A', 'B', 'C', 'D']
+            , title: {A:'T1', B:'T2', C:'T3', D:'T4'}
+            , arcColorDict: {
+                            A: 'red',
+                            B: 'blue',
+                            C: 'yellow',
+                            D: 'black'
+                        }
         })
 
 
@@ -75,10 +72,11 @@
             var title = a[2];
             var marker = L.marker(L.latLng(a[0], a[1]), {
                 title: title
+                , value: a[3], max: 100000
             });
 
 
-            marker.bindPopup(title);
+            marker.bindPopup(title+'<br>'+a[3]);
             markers.addLayer(marker);
         }
 

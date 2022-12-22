@@ -8,7 +8,6 @@
     <title>Leaflet Demo</title>
     <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
-
     <link href='https://unpkg.com/leaflet@1.3.4/dist/leaflet.css' rel='stylesheet' />
     <link href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" rel='stylesheet' />
     <style>
@@ -54,23 +53,32 @@
                     chunkedLoading: true
                 }, {
                     key: 'title',
-                    arcColorDict: {
-                        A: 'red',
-                        B: 'blue',
-                        C: 'yellow',
-                        D: 'black'
-                    }
+                    sumField: 'value'
+                    , totalField: 'max'
+                    , order:['A', 'B', 'C', 'D']
+                    , title: {A:'T1', B:'T2', C:'T3', D:'T4'}
+                    , arcColorDict: {
+                                    A: 'red',
+                                    B: 'blue',
+                                    C: 'yellow',
+                                    D: 'black'
+                                }
                 })
+
+
+                // var markers = L.markerClusterGroup();
+                var points = mockPoints(2000);
 
                 for (var i = 0; i < points.length; i++) {
                     var a = points[i];
                     var title = a[2];
                     var marker = L.marker(L.latLng(a[0], a[1]), {
-                        title: title
+                        title: title,
+                        value: a[3], max: 100000
                     });
 
 
-                    marker.bindPopup(title);
+                    marker.bindPopup(title + '<br>' + a[3]);
                     markers.addLayer(marker);
                 }
 
@@ -78,6 +86,7 @@
             }
         }
         xhr.send(null);
+
         function mockPoints(total) {
             var types = ['A', 'B', 'C', 'D'],
                 x = [0, 120],
@@ -88,7 +97,7 @@
                 var lat = Math.random() * (y[1] - y[0]) + y[0],
                     long = Math.random() * (x[1] - x[0]) + x[0],
                     type = types[Math.floor(Math.random() * types.length)];
-                result.push([lat, long, type])
+                result.push([lat, long, type, (Math.floor(Math.random() * 100000))])
             }
             return result;
         }
