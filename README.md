@@ -15,10 +15,10 @@ A lightweight standalone [Leaflet](https://leafletjs.com) plugin to display donu
 
 ## Usage
 
-First install using `npm install Leaflet.DonutCluster` or `yarn add Leaflet.DonutCluster` and import in your project:
+First install using `npm install @kalisio/Leaflet.DonutCluster` or `yarn add @kalisio/Leaflet.DonutCluster` and import in your project:
 ```javascript
-import 'Leaflet.DonutCluster/src/Leaflet.DonutCluster.css'
-import 'Leaflet.DonutCluster/src/Leaflet.DonutCluster.js'
+import '@kalisio/Leaflet.DonutCluster/src/Leaflet.DonutCluster.css'
+import '@kalisio/Leaflet.DonutCluster/src/Leaflet.DonutCluster.js'
 ```
 You can also directly include `Leaflet.DonutCluster.js` and `Leaflet.DonutCluster.css` in your HTML pages.
 
