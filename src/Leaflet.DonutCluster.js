@@ -61,7 +61,7 @@
             legend,
             getLegend = options.getLegend || function (title, color, percentage) {
                 return `<span style="border: 1px solid ${color}; background-color:rgba(255, 255, 255, 0.7);
-                        border-left-width:15px; padding:1px;">${title}:&nbsp;${percentage}%</span>`
+                        border-left-width:15px; padding:1px; white-space: nowrap;">${title}:&nbsp;${percentage}%</span>`
             },
             setAttribute = function (el, o) {
                 for (var j in o) {
