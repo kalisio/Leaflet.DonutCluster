@@ -41,7 +41,7 @@
             size = options.size || 100,
             size0 = size + 10,
             data = options.data || [{
-                value: 1
+                value: 1, total: 1
             }],
             weight = options.weight || 20,
             colors = options.colors,
@@ -53,13 +53,15 @@
             sin = M.sin,
             cos = M.cos,
             sum = 0,
+            total = 0,
             i,
             value,
             arc,
             text,
             legend,
-            getLegend = options.getLegend || function (title, color, percentage) {
-                return '<span style="border: 1px solid ' + color + '; background-color:rgba(255, 255, 255, 0.7) ;border-left-width:15px; padding:1px;">' + title + ':&nbsp;' + percentage + '%</span>'
+            getLegend = options.getLegend || function (title, color, percentage, value) {
+                return `<span style="border: 1px solid ${color}; background-color:rgba(255, 255, 255, 0.7);
+                        border-left-width:15px; padding:1px;">${title}:&nbsp;${percentage}%</span>`
             },
             setAttribute = function (el, o) {
                 for (var j in o) {
@@ -69,12 +71,14 @@
 
         for (i = 0; i < data.length; i++) {
             sum += data[i].value;
+            total += data[i].total;
         }
 
         if (sum == 0) {
             for (i = 0; i < data.length; i++) {
                 data[i].value = 1;
                 sum += data[i].value;
+                total += data[i].value;
             }
         }
         div.className = 'donut';
@@ -112,7 +116,7 @@
         div.appendChild(svg);
 
         for (i = 0; i < data.length; i++) {
-            value = data[i].value / sum;
+            value = data[i].value / (sum !== total ? total : sum);
             value = value === 1 ? .99999 : value;
             arc = doc.createElementNS(NS, 'path');
             var r1 = r + 5;
@@ -127,7 +131,7 @@
             var name = data[i].name
             var c = '#555'
             if (!colors) {
-                // Check if the value contains directly the color if we no dict available
+                // Check if the value contains directly the color if no dict available
                 if ((typeof name === 'string') && name.startsWith('#')) c = name
             } else {
                 if (Array.isArray(colors)) c = colors[i % colors.length]
@@ -175,7 +179,7 @@
                     text.innerHTML = val;
                     t.saved = {
                         val: d.value,
-                        legend: getLegend(d.title || d.name, c, perc)
+                        legend: getLegend(d.title || d.name, c, perc, d.value)
                     }
                     legend.innerHTML = t.saved.legend;
                 })
@@ -237,11 +241,13 @@
 
     function createDonut(points, opt, cfgFn) {
         var blocks = {},
+            totalBlocks = {},
             count = points.length,
             key = opt.key,
-            sumField = opt.sumField, 
-            fieldList = opt.order || (opt.order = []),
-            fieldDict = opt.orderDict || (opt.orderDict={}),
+            sumField = opt.sumField,
+            totalField = opt.totalField || opt.sumField,
+            fieldList = opt.order || [],
+            fieldDict = opt.orderDict || {},
             titleDict = opt.title || {},
             cfg = {};
         if (typeof cfgFn == 'function')
@@ -251,33 +257,41 @@
         }
         if(Array.isArray(opt.title) && opt.order){
             titleDict =  {};
-            for(var i in opt.title){
+            for(var i = 0; i < opt.title.length; i++){
                 titleDict[opt.order[i]] = opt.title[i]
             }
             opt.title = titleDict;
         }
-        for(var i in fieldList){
+        for(var i = 0; i < fieldList.length; i++){
             fieldDict[fieldList[i]] = 1;
         }
 
         for (var i = 0; i < count; i++) {
-            var s = points[i].options[key]
+            const point = points[i]
+            // We can get value from marker options or underlying feature
+            var feature = point.feature
+            var properties = {}
+            if (feature && feature.properties) properties = feature.properties
+            var s = point.options[key] || properties[key]
             if (!blocks[s]) blocks[s] = 0;
+            if (!totalBlocks[s]) totalBlocks[s] = 0;
             if (!fieldDict[s]) {
                 fieldDict[s] = 1;
                 fieldList.push(s);
             }
 
-            if (!sumField)
-                blocks[s]++;
-            else blocks[s] += points[i].options[sumField];
+            if (!sumField) blocks[s]++;
+            else blocks[s] += point.options[sumField] || properties[sumField];
+            if (!totalField) totalBlocks[s]++;
+            else totalBlocks[s] += point.options[totalField] || properties[totalField];
         }
         var list = [];
 
-        for(var i in fieldList){
+        for(var i = 0; i < fieldList.length; i++){
             var s = fieldList[i];
             list.push({
                 value: blocks[s] || 0,
+                total: totalBlocks[s] || 0,
                 name: s,
                 title: titleDict[s],
                 active: cfg.active && cfg.active == s
