@@ -59,7 +59,7 @@
             arc,
             text,
             legend,
-            getLegend = options.getLegend || function (title, color, percentage, value) {
+            getLegend = options.getLegend || function (title, color, percentage) {
                 return `<span style="border: 1px solid ${color}; background-color:rgba(255, 255, 255, 0.7);
                         border-left-width:15px; padding:1px;">${title}:&nbsp;${percentage}%</span>`
             },
@@ -92,7 +92,13 @@
         //if css is included, please comment the next line for performance.
         //text.setAttribute('style', 'color: black;display: block;position: absolute;top: 50%;left: 0;z-index: 2;line-height: 0;width: 100%;text-align: center;')
 
-        text.innerHTML = readable(sum);
+        if (options.textContent === 'count') {
+            text.innerHTML = readable(data.length);
+        } else if (options.textContent === 'total') {
+            text.innerHTML = readable(total);
+        } else {
+            text.innerHTML = readable(sum);
+        }
         legend = document.createElement('div');
 
 
@@ -179,7 +185,7 @@
                     text.innerHTML = val;
                     t.saved = {
                         val: d.value,
-                        legend: getLegend(d.title || d.name, c, perc, d.value)
+                        legend: getLegend(d.title || d.name, c, perc)
                     }
                     legend.innerHTML = t.saved.legend;
                 })
@@ -191,8 +197,14 @@
                     }
                     t.setAttribute('stroke-width', weight);
                     var saved = {
-                        val: sum,
                         legend: ''
+                    }
+                    if (options.textContent === 'count') {
+                        saved.val = data.length;
+                    } else if (options.textContent === 'total') {
+                        saved.val = total;
+                    } else {
+                        saved.val = sum;
                     }
                     if (stick) {
                         saved = stick.saved;
@@ -302,6 +314,7 @@
             size: cfg.size || 50,
             weight: cfg.weight || 10,
             opacity: cfg.opacity || 0.7,
+            textContent: cfg.textContent || 'sum',
             textClassName: cfg.textClassName || 'donut-text',
             getLegend: cfg.getLegend,
             data: list,
@@ -381,6 +394,7 @@
                     weight: style.weight,
                     opacity: style.opacity,
                     getLegend: donutOpt.getLegend,
+                    textContent: donutOpt.textContent,
                     textClassName: donutOpt.textClassName,
                     colors: donutOpt.arcColorDict,
                     fillColor: style.fill
