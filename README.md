@@ -23,24 +23,53 @@ You can also directly include `Leaflet.DonutCluster.js` and `Leaflet.DonutCluste
 
 Then use `L.DonutCluster` to create a marker cluster instance with options:
 ```javascript
-//create the markercluster
+// Create the markercluster
 var markers = L.DonutCluster(
-    // the first parameter is the standard marker cluster's configuration
+    // The first parameter is the standard marker cluster's configuration.
     {
         chunkedLoading: true
     }
-    // the second parameter is the donut cluster's configuration
+    // The second parameter is the donut cluster's configuration.
     , {
-        key: 'title', //mandotary, indicates the grouped field, set it in the options of marker
-        sumField: 'value', // optional, indicates the value field to sum. set it in the options of marker
-        order: ['A', 'D', 'B', 'C'], // optional, indicates the group order.
-        title: ['Type A','Type D','Type B','Type C' ], // optional, indicates the group title, when it is an array, the order option must be specified. or use an object.{A:'Type A',D: 'Type D',B:'Type B',C:'Type C' }
-        arcColorDict: { // mandotary, the arc color for each group.
+        // Mandotary, indicates the field to group items by in order to create donut' sections.
+        key: 'title',
+        // Optional, indicates the value field to compute the "weight" of each donut section, ie item group.
+        // If not given each item is assumed to have a value of 1 and the weight will be thus equal to item count of the group.
+        // The size of each donut section is related to the weight of the group vs the sum of weight.
+        sumField: 'value',
+        // Optional, indicates the value field to compute a "maximum weight" of each donut section, ie item group.
+        // If given the size of each donut section will be related to the weight of the group vs the sum of total weight.
+        totalField: 'maxValue',
+        // Optional, indicates the group order.
+        order: ['A', 'D', 'B', 'C'],
+        // Optional, indicates the group IDs, when it is an array, the order option must be specified.
+        // Otherwise use an object like `{ A: 'Type A', D: 'Type D', B: 'Type B', C: 'Type C' }``
+        title: ['Type A','Type D','Type B','Type C' ],
+        // Mandotary, the arc color for each donut section.
+        // If array of colors will loop over it to pick color of each section sequentially.
+        arcColorDict: {
             A: 'red',
             B: 'blue',
             C: 'yellow',
             D: 'black'
-        }
+        },
+        // Optional, the style of the donut
+        style: {
+            size: 40,
+            fill: '#99d8c9',
+            opacity: 1,
+            weight: 7
+        },
+        // A class to assign to the donut center text
+        textClassName: 'donut-text',
+        // The value to be displayed in the donut center text
+        // Could be `count`, `total` or `sum` (defaults).
+        textContent: 'count',
+        // A class to assign to the donut legend text on mouse hover
+        legendClassName: 'donut-legend',
+        // The value to be displayed in the donut legend text on mouse hover
+        // Could be `percentage` or `value` (defaults).
+        legendContent: 'value',
     }
 )
 ```
@@ -54,6 +83,8 @@ var marker = L.marker(L.latLng(a[0], a[1]), {
 
 markers.addLayer(marker);
 ```
+
+> Note: when the markers are created from a Leaflet GeoJson layer you can also directly reference properties of the underlying feature instead of marker options
 
 ## License
 

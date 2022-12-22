@@ -29,7 +29,8 @@
             val = roundToTwo(val / 1000000) + 'M'
         else if (val >= 1000000000)
             val = roundToTwo(val / 1000000000) + 'B'
-        return val;
+        else if (typeof val === 'number') val = val.toFixed(0)
+        return val
     }
     var doc = document,
         M = Math,
@@ -59,9 +60,15 @@
             arc,
             text,
             legend,
-            getLegend = options.getLegend || function (title, color, percentage) {
-                return `<span style="border: 1px solid ${color}; background-color:rgba(255, 255, 255, 0.7);
-                        border-left-width:15px; padding:1px; white-space: nowrap;">${title}:&nbsp;${percentage}%</span>`
+            getLegend = options.getLegend || function (title, color, percentage, value) {
+                var className = options.legendClassName || 'donut-legend'
+                var legend = `${title}:&nbsp;`
+                if (options.legendContent === 'percentage') {
+                    legend += readable(percentage) + '%';
+                } else {
+                    legend += readable(value);
+                }
+                return `<span class="${className}" style="border: 2px solid ${color};">${legend}</span>`
             },
             setAttribute = function (el, o) {
                 for (var j in o) {
@@ -122,6 +129,7 @@
         div.appendChild(svg);
 
         for (i = 0; i < data.length; i++) {
+            // Donut section weight is computed relatively to sum or total
             value = data[i].value / (sum !== total ? total : sum);
             value = value === 1 ? .99999 : value;
             arc = doc.createElementNS(NS, 'path');
@@ -159,9 +167,7 @@
             });
             donut.data(arc, data[i]);
 
-            (function (d, c, perc) {
-                if (perc == '99.99')
-                    perc = '100'
+            (function (d, c, percentage) {
                 if (options.onclick) {
                     arc.addEventListener('click', function (e) {
                         var t = e.target,
@@ -174,18 +180,22 @@
                 }
 
                 arc.addEventListener('mouseenter', function (e) {
-                    var t = e.target,
-                        val = readable(d.value);
-
+                    var t = e.target
 
                     t.setAttribute('stroke-width', weight + 5);
                     legend.setAttribute('class', 'legend');
                     div.zIndex = div.parentNode.style.zIndex;
                     div.parentNode.style.zIndex = 100000;
-                    text.innerHTML = val;
+                    // If we have the value in the legend it does not make sense to also have it in text,
+                    // so that we switch automatically to percentage display in text
+                    if (options.legendContent !== 'percentage') {
+                        text.innerHTML = readable(percentage) + '%';
+                    } else {
+                        text.innerHTML = readable(d.value);
+                    }
                     t.saved = {
                         val: d.value,
-                        legend: getLegend(d.title || d.name, c, perc)
+                        legend: getLegend(d.title || d.name, c, percentage, d.value)
                     }
                     legend.innerHTML = t.saved.legend;
                 })
@@ -213,7 +223,7 @@
                     text.innerHTML = readable(saved.val);
                     legend.innerHTML = saved.legend;
                 })
-            })(data[i], c, (value * 100 + '').substr(0, 5))
+            })(data[i], c, value * 100)
             svg.appendChild(arc);
             if (data[i].active) {
                 svg.stick = arc;
@@ -298,7 +308,8 @@
             else totalBlocks[s] += point.options[totalField] || properties[totalField];
         }
         var list = [];
-
+        // Ascending by default if not given
+        if (!opt.order) fieldList.sort()
         for(var i = 0; i < fieldList.length; i++){
             var s = fieldList[i];
             list.push({
@@ -316,6 +327,8 @@
             opacity: cfg.opacity || 0.7,
             textContent: cfg.textContent || 'sum',
             textClassName: cfg.textClassName || 'donut-text',
+            legendContent: cfg.legendContent || 'percentage',
+            legendClassName: cfg.legendClassName || 'donut-legend',
             getLegend: cfg.getLegend,
             data: list,
             onclick: cfg.onclick,
@@ -393,6 +406,8 @@
                     size: style.size,
                     weight: style.weight,
                     opacity: style.opacity,
+                    legendContent: donutOpt.legendContent,
+                    legendClassName: donutOpt.legendClassName,
                     getLegend: donutOpt.getLegend,
                     textContent: donutOpt.textContent,
                     textClassName: donutOpt.textClassName,
