@@ -181,8 +181,8 @@
                 }
 
                 arc.addEventListener('mouseenter', function (e) {
+                    if (options.hideLegend) return
                     var t = e.target
-
                     t.setAttribute('stroke-width', weight + 5);
                     legend.setAttribute('class', 'legend');
                     div.zIndex = div.parentNode.style.zIndex;
@@ -201,6 +201,7 @@
                     legend.innerHTML = t.saved.legend;
                 })
                 arc.addEventListener('mouseleave', function (e) {
+                    if (options.hideLegend) return
                     var t = e.target,
                         stick = t.parentNode.stick;
                     if (stick == t) {
@@ -328,6 +329,7 @@
             opacity: cfg.opacity || 0.7,
             textContent: cfg.textContent || 'sum',
             textClassName: cfg.textClassName || 'donut-text',
+            hideLegend: cfg.hideLegend,
             legendContent: cfg.legendContent || 'percentage',
             legendClassName: cfg.legendClassName || 'donut-legend',
             format: cfg.format || readable,
@@ -408,6 +410,7 @@
                     size: style.size,
                     weight: style.weight,
                     opacity: style.opacity,
+                    hideLegend: donutOpt.hideLegend,
                     legendContent: donutOpt.legendContent,
                     legendClassName: donutOpt.legendClassName,
                     format: donutOpt.format,

@@ -36,10 +36,10 @@ var markers = L.DonutCluster(
         key: 'title',
         // Optional, indicates the value field to compute the "weight" of each donut section, ie item group.
         // If not given each item is assumed to have a value of 1 and the weight will be thus equal to item count of the group.
-        // The size of each donut section is related to the weight of the group vs the sum of weight.
+        // The size of each donut section is related to the weight of the group vs the sum of all weights.
         sumField: 'value',
         // Optional, indicates the value field to compute a "maximum weight" of each donut section, ie item group.
-        // If given the size of each donut section will be related to the weight of the group vs the sum of total weight.
+        // If given the size of each donut section will be related to the weight of the group vs the sum of maximum weights.
         totalField: 'maxValue',
         // Optional, indicates the group order.
         order: ['A', 'D', 'B', 'C'],
@@ -71,9 +71,12 @@ var markers = L.DonutCluster(
         // The value to be displayed in the donut legend text on mouse hover
         // Could be `percentage` or `value` (defaults).
         legendContent: 'value',
+        // Set this to true to avoid displaying legend on mouse over
+        hideLegend: true,
         // Function used to format value numbers for display
         // Possible types are `count`, `percentage` or `value` and can help to use different formattings
         format: (value, type) => value.toFixed(0),
+        // Function used to customize legend output
         getLegend: (title, color, percentage, value) => `<span>${title}:&nbsp;${percentage}%</span>`
     }
 )
