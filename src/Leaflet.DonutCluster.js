@@ -42,8 +42,9 @@
             size = options.size || 100,
             size0 = size + 10,
             data = options.data || [{
-                value: 1, total: 1
+                name: 'default', value: 1, total: 1
             }],
+            templateContext = { data: {} },
             weight = options.weight || 20,
             colors = options.colors,
             fillColor = options.fillColor || '#f1d357',
@@ -76,10 +77,11 @@
                     el.setAttribute(j, o[j]);
                 }
             };
-
+        
         for (i = 0; i < data.length; i++) {
             sum += data[i].value;
             total += data[i].total;
+            templateContext.data[data[i].name] = data[i];
         }
 
         if (sum == 0) {
@@ -89,6 +91,8 @@
                 total += data[i].value;
             }
         }
+        templateContext.sum = sum;
+        templateContext.total = total;
         div.className = 'donut';
         div.style.width = div.style.height = size0 + 'px';
         div.style.position = 'relative';
@@ -100,7 +104,9 @@
         //if css is included, please comment the next line for performance.
         //text.setAttribute('style', 'color: black;display: block;position: absolute;top: 50%;left: 0;z-index: 2;line-height: 0;width: 100%;text-align: center;')
 
-        if (options.textContent === 'count') {
+        if (options.textCompiler) {
+            text.innerHTML = options.textCompiler(templateContext);
+        } else if (options.textContent === 'count') {
             text.innerHTML = format(data.length, 'count');
         } else if (options.textContent === 'total') {
             text.innerHTML = format(total, 'value');
@@ -187,16 +193,20 @@
                     legend.setAttribute('class', 'legend');
                     div.zIndex = div.parentNode.style.zIndex;
                     div.parentNode.style.zIndex = 100000;
-                    // If we have the value in the legend it does not make sense to also have it in text,
-                    // so that we switch automatically to percentage display in text
-                    if (options.legendContent !== 'percentage') {
-                        text.innerHTML = format(percentage, 'percentage') + '%';
-                    } else {
-                        text.innerHTML = format(d.value, 'value');
+                    if (!options.legendCompiler && !options.textCompiler) {
+                        // If we have the value in the legend it does not make sense to also have it in text,
+                        // so that we switch automatically to percentage display in text
+                        if (options.legendContent !== 'percentage') {
+                            text.innerHTML = format(percentage, 'percentage') + '%';
+                        } else {
+                            text.innerHTML = format(d.value, 'value');
+                        }
                     }
                     t.saved = {
                         val: d.value,
-                        legend: getLegend(d.title || d.name, c, percentage, d.value)
+                        legend: options.legendCompiler ?
+                            options.legendCompiler(Object.assign(templateContext, { selected: d, percentage, color: c })) :
+                            getLegend(d.title || d.name, c, percentage, d.value)
                     }
                     legend.innerHTML = t.saved.legend;
                 })
@@ -211,7 +221,9 @@
                     var saved = {
                         legend: ''
                     }
-                    if (options.textContent === 'count') {
+                    if (options.textCompiler) {
+                        saved.val = options.textCompiler(templateContext);
+                    } else if (options.textContent === 'count') {
                         saved.val = data.length;
                     } else if (options.textContent === 'total') {
                         saved.val = total;
@@ -222,7 +234,8 @@
                         saved = stick.saved;
                     }
                     div.parentNode.style.zIndex = div.zIndex;
-                    text.innerHTML = format(saved.val, (options.textContent === 'count' ? 'count' : 'value'));
+                    text.innerHTML = (options.textCompiler ?
+                        saved.val : format(saved.val, (options.textContent === 'count' ? 'count' : 'value')));
                     legend.innerHTML = saved.legend;
                 })
             })(data[i], c, value * 100)
@@ -291,7 +304,7 @@
         }
 
         for (var i = 0; i < count; i++) {
-            const point = points[i]
+            var point = points[i]
             // We can get value from marker options or underlying feature
             var feature = point.feature
             var properties = {}
@@ -329,9 +342,11 @@
             opacity: cfg.opacity || 0.7,
             textContent: cfg.textContent || 'sum',
             textClassName: cfg.textClassName || 'donut-text',
+            textCompiler: cfg.textCompiler,
             hideLegend: cfg.hideLegend,
             legendContent: cfg.legendContent || 'percentage',
             legendClassName: cfg.legendClassName || 'donut-legend',
+            legendCompiler: cfg.legendCompiler,
             format: cfg.format || readable,
             getLegend: cfg.getLegend,
             data: list,
@@ -393,7 +408,12 @@
      * 
      */
     L.DonutCluster = function (opt, donutOpt) {
-
+        // Manage templating
+        var textCompiler, legendCompiler;
+        if (window._ && (typeof window._.template === 'function')) {
+            if (donutOpt.textTemplate) textCompiler = _.template(donutOpt.textTemplate);
+            if (donutOpt.legendTemplate) legendCompiler = _.template(donutOpt.legendTemplate);
+        }
 
         var createIcon = function (cluster) {
             var markers = cluster.getAllChildMarkers();
@@ -413,10 +433,12 @@
                     hideLegend: donutOpt.hideLegend,
                     legendContent: donutOpt.legendContent,
                     legendClassName: donutOpt.legendClassName,
+                    legendCompiler: legendCompiler,
                     format: donutOpt.format,
                     getLegend: donutOpt.getLegend,
                     textContent: donutOpt.textContent,
                     textClassName: donutOpt.textClassName,
+                    textCompiler: textCompiler,
                     colors: donutOpt.arcColorDict,
                     fillColor: style.fill
                 }
