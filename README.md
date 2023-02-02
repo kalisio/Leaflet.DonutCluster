@@ -66,11 +66,15 @@ var markers = L.DonutCluster(
         // The value to be displayed in the donut center text
         // Could be `count`, `total` or `sum` (defaults).
         textContent: 'count',
+        // If lodash is available text content can be based on a template.
+        textTemplate: '<%= data.active.value %>/<%= sum %>',
         // A class to assign to the donut legend text on mouse hover
         legendClassName: 'donut-legend',
         // The value to be displayed in the donut legend text on mouse hover
         // Could be `percentage` or `value` (defaults).
         legendContent: 'value',
+        // If lodash is available legend HTML content can be based on a template.
+        legendTemplate: '<span style="border: 2px solid <%= color %>;"><%= selected.title %>:&nbsp;<%= selected.value %></span>',
         // Set this to true to avoid displaying legend on mouse over
         hideLegend: true,
         // Function used to format value numbers for display
