@@ -1,7 +1,7 @@
 {
   "name": "@kalisio/leaflet.donutcluster",
   "description": "Plugin to display donut charts instead of circles in map when using Leaflet marker cluster",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "homepage": "https://github.com/kalisio/Leaflet.DonutCluster",
   "main": "src/Leaflet.DonutCluster.js",
   "keywords": [
