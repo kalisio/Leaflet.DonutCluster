@@ -1,5 +1,7 @@
-Leaflet.DonutCluster
-=====================
+# Leaflet.DonutCluster
+
+[![Latest Release](https://img.shields.io/github/v/tag/kalisio/Leaflet.DonutCluster?sort=semver&label=latest)](https://github.com/kalisio/Leaflet.DonutCluster/releases)
+[![Download Status](https://img.shields.io/npm/dm/@kalisio/leaflet.donutcluster.svg?style=flat-square)](https://www.npmjs.com/package/@kalisio/leaflet.donutcluster)
 
 > forked from [akq/Leaflet.DonutCluster](https://github.com/akq/Leaflet.DonutCluster)
 
